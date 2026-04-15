@@ -88,6 +88,7 @@ const variants = {
 export function LeadForm() {
   const [stepIndex, setStepIndex] = React.useState(0);
   const [submitting, setSubmitting] = React.useState(false);
+  const [submitError, setSubmitError] = React.useState<string | null>(null);
   const [submitted, setSubmitted] = React.useState<{
     id?: string;
   } | null>(null);
@@ -158,11 +159,18 @@ export function LeadForm() {
   };
 
   const onSubmit = async (values: LeadFormValues) => {
+    if (submitting) return; // belt-and-braces double-submit guard
     setSubmitting(true);
+    setSubmitError(null);
     try {
       const result = await submitLead(values as LeadFormOutput);
       if (result.ok) {
         setSubmitted({ id: result.id });
+      } else {
+        setSubmitError(
+          result.error ??
+            "We couldn't send your brief. Please try again in a moment.",
+        );
       }
     } finally {
       setSubmitting(false);
@@ -172,6 +180,7 @@ export function LeadForm() {
   const onReset = () => {
     reset();
     setSubmitted(null);
+    setSubmitError(null);
     setStepIndex(0);
     scrollTop();
   };
@@ -690,6 +699,24 @@ export function LeadForm() {
                   </motion.div>
                 </AnimatePresence>
               </div>
+
+              <AnimatePresence initial={false}>
+                {submitError ? (
+                  <motion.div
+                    key="submit-error"
+                    initial={{ opacity: 0, y: -6, height: 0 }}
+                    animate={{ opacity: 1, y: 0, height: "auto" }}
+                    exit={{ opacity: 0, y: -6, height: 0 }}
+                    transition={{ duration: 0.25 }}
+                    role="alert"
+                    className="mt-8 overflow-hidden"
+                  >
+                    <div className="rounded-2xl border border-destructive/30 bg-destructive/[0.04] px-4 py-3 text-[13px] leading-relaxed text-destructive">
+                      {submitError}
+                    </div>
+                  </motion.div>
+                ) : null}
+              </AnimatePresence>
 
               <div className="mt-10 flex flex-col-reverse items-stretch gap-3 border-t border-border/60 pt-6 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
                 <Button

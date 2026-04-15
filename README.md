@@ -62,28 +62,27 @@ lib/
 Progress is validated per step via `trigger()` and advances only on valid input.
 Framer Motion handles entrance/exit transitions; keyboard + screen-reader support is preserved.
 
-## Connecting to Supabase / API
+## Email delivery
 
-`lib/submit-lead.ts` exposes a single `submitLead(payload)` function. Replace the stub:
+Briefs are delivered via **Resend** through an internal Next.js route handler
+at `app/api/send/route.ts`. The server re-validates the payload with the same
+Zod schema, renders a clean HTML email (see `lib/lead-email.ts`), and sends it
+to your notification inbox with `replyTo` set to the client's email.
 
-```ts
-import { createClient } from "@supabase/supabase-js";
-const supabase = createClient(URL, ANON_KEY);
+Copy `.env.example` to `.env.local` and set:
 
-export async function submitLead(payload: LeadFormOutput) {
-  const { data, error } = await supabase
-    .from("leads")
-    .insert(payload)
-    .select("id")
-    .single();
-  return error
-    ? { ok: false, error: error.message }
-    : { ok: true, id: data.id };
-}
+```
+RESEND_API_KEY=re_xxx
+RESEND_FROM_EMAIL="Atelier Estate <briefs@yourdomain.com>"
+LEAD_NOTIFICATION_EMAIL=hello@yourdomain.com
 ```
 
-Alternatively, create `app/api/leads/route.ts` and POST to it — the schema is
-shared, so server-side re-validation is a one-liner.
+If `RESEND_API_KEY` is unset in development, the route logs the brief and
+returns a mock success — useful for preview without credentials. In
+production a missing key returns a clear error to the client.
+
+To switch backends (Supabase, a CRM, etc.), replace the body of the POST
+handler in `app/api/send/route.ts` — the form contract does not change.
 
 ## Design notes
 

@@ -7,27 +7,47 @@ export type LeadSubmissionResult = {
 };
 
 /**
- * Thin adapter for lead submission. Swap the implementation to wire up to
- * Supabase, a Next.js route handler, or a third-party CRM without changing
- * the form component.
- *
- * Example (Supabase):
- *   const { data, error } = await supabase.from("leads").insert(payload).select().single();
- *   return error ? { ok: false, error: error.message } : { ok: true, id: data.id };
+ * Thin client-side adapter for submitting a lead. POSTs the validated
+ * payload to our internal API route, which in turn delivers the brief
+ * via Resend. Swap the endpoint or handler implementation without
+ * touching the form component.
  */
 export async function submitLead(
   payload: LeadFormOutput,
 ): Promise<LeadSubmissionResult> {
-  // Simulate network + a stable id. Replace with a real integration.
-  await new Promise((r) => setTimeout(r, 900));
+  try {
+    const response = await fetch("/api/send", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
 
-  if (process.env.NODE_ENV !== "production") {
-    // eslint-disable-next-line no-console
-    console.info("[lead]", payload);
+    type ApiResponse = { ok?: boolean; id?: string; error?: string };
+
+    // Attempt to parse the response body whether it's 2xx or 4xx/5xx.
+    let json: ApiResponse | null = null;
+    try {
+      json = (await response.json()) as ApiResponse;
+    } catch {
+      /* no-op — fall through to status-based handling below */
+    }
+
+    if (!response.ok || !json?.ok) {
+      return {
+        ok: false,
+        error:
+          json?.error ??
+          "We couldn't send your brief. Please try again, or email us at hello@atelierestate.com.",
+      };
+    }
+
+    return { ok: true, id: json.id };
+  } catch {
+    // Network / offline
+    return {
+      ok: false,
+      error:
+        "Connection issue — please check your network and try again. If this persists, email hello@atelierestate.com.",
+    };
   }
-
-  return {
-    ok: true,
-    id: `lead_${Math.random().toString(36).slice(2, 10)}`,
-  };
 }
