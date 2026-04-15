@@ -14,7 +14,6 @@ import {
   Loader2,
   Lock,
   MapPin,
-  Search,
   Sparkles,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -181,9 +180,9 @@ export function LeadForm() {
     <div
       ref={containerRef}
       id="get-started"
-      className="relative overflow-hidden rounded-[28px] border border-border/80 bg-card/90 p-5 shadow-[0_24px_80px_-32px_rgba(24,45,37,0.35)] backdrop-blur-sm sm:p-8 md:p-10"
+      className="relative overflow-hidden rounded-[28px] border border-border/70 bg-card/95 p-5 shadow-[0_30px_80px_-40px_rgba(24,45,37,0.32)] backdrop-blur-sm sm:p-7 md:p-9"
     >
-      <div className="pointer-events-none absolute -top-20 -right-20 h-56 w-56 rounded-full bg-sand-200/60 blur-3xl" />
+      <div className="pointer-events-none absolute -top-24 -right-16 h-56 w-56 rounded-full bg-sand-200/60 blur-3xl" />
       <div className="pointer-events-none absolute -bottom-28 -left-24 h-64 w-64 rounded-full bg-forest-200/40 blur-3xl" />
 
       <AnimatePresence mode="wait">
@@ -204,18 +203,22 @@ export function LeadForm() {
             animate={{ opacity: 1 }}
             className="relative"
           >
-            <FormProgress
-              current={stepIndex + 1}
-              total={stepOrder.length}
-              label={stepLabels[step]}
-            />
+            <AdvisorSignature />
+
+            <div className="mt-5">
+              <FormProgress
+                current={stepIndex + 1}
+                total={stepOrder.length}
+                steps={stepOrder.map((s) => stepLabels[s])}
+              />
+            </div>
 
             <form
               onSubmit={handleSubmit(onSubmit)}
-              className="mt-7"
+              className="mt-8"
               noValidate
             >
-              <div className="relative min-h-[360px]">
+              <div className="relative">
                 <AnimatePresence mode="wait" initial={false}>
                   <motion.div
                     key={step}
@@ -223,7 +226,7 @@ export function LeadForm() {
                     initial="enter"
                     animate="center"
                     exit="exit"
-                    transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+                    transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
                     className="space-y-6"
                   >
                     {step === "intent" && (
@@ -639,7 +642,7 @@ export function LeadForm() {
                           />
                         </Field>
 
-                        <div className="flex items-start gap-3 rounded-2xl border border-border/80 bg-sand-50/60 p-4">
+                        <div className="flex items-start gap-3 rounded-2xl border border-border/70 bg-sand-50/70 p-4">
                           <Controller
                             control={control}
                             name="consent"
@@ -688,13 +691,16 @@ export function LeadForm() {
                 </AnimatePresence>
               </div>
 
-              <div className="mt-10 flex items-center justify-between gap-4 border-t border-border/60 pt-6">
+              <div className="mt-10 flex flex-col-reverse items-stretch gap-3 border-t border-border/60 pt-6 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
                 <Button
                   type="button"
                   variant="ghost"
                   onClick={goBack}
                   disabled={stepIndex === 0 || submitting}
-                  className={cn(stepIndex === 0 && "invisible")}
+                  className={cn(
+                    "sm:w-auto",
+                    stepIndex === 0 && "hidden sm:invisible sm:inline-flex",
+                  )}
                 >
                   <ArrowLeft className="h-4 w-4" />
                   Back
@@ -705,7 +711,7 @@ export function LeadForm() {
                     type="button"
                     onClick={goNext}
                     size="lg"
-                    className="min-w-[160px]"
+                    className="w-full sm:w-auto sm:min-w-[176px]"
                   >
                     Continue
                     <ArrowRight className="h-4 w-4" />
@@ -715,16 +721,16 @@ export function LeadForm() {
                     type="submit"
                     size="lg"
                     disabled={submitting}
-                    className="min-w-[200px]"
+                    className="w-full sm:w-auto sm:min-w-[230px]"
                   >
                     {submitting ? (
                       <>
                         <Loader2 className="h-4 w-4 animate-spin" />
-                        Sending brief…
+                        Sending your brief…
                       </>
                     ) : (
                       <>
-                        Request my shortlist
+                        Send brief to an advisor
                         <ArrowRight className="h-4 w-4" />
                       </>
                     )}
@@ -756,10 +762,10 @@ function StepHeader({
 }) {
   return (
     <div className="mb-6 space-y-2">
-      <p className="text-xs font-medium uppercase tracking-[0.18em] text-forest-700">
+      <p className="text-[11px] font-medium uppercase tracking-[0.2em] text-forest-700">
         {eyebrow}
       </p>
-      <h3 className="font-display text-2xl font-medium leading-tight text-foreground text-balance sm:text-[28px]">
+      <h3 className="font-display text-[26px] font-medium leading-[1.15] tracking-tight text-foreground text-balance sm:text-[30px]">
         {title}
       </h3>
       {subtitle ? (
@@ -767,6 +773,29 @@ function StepHeader({
           {subtitle}
         </p>
       ) : null}
+    </div>
+  );
+}
+
+function AdvisorSignature() {
+  return (
+    <div className="flex items-center gap-3">
+      <div className="flex -space-x-2" aria-hidden>
+        <span className="flex h-9 w-9 items-center justify-center rounded-full border-2 border-card bg-forest-700 font-display text-[13px] font-medium text-sand-50">
+          EM
+        </span>
+        <span className="flex h-9 w-9 items-center justify-center rounded-full border-2 border-card bg-sand-300 font-display text-[13px] font-medium text-forest-900">
+          LC
+        </span>
+      </div>
+      <div className="flex flex-col leading-tight">
+        <span className="text-[13px] font-medium text-foreground">
+          Reviewed personally by a senior advisor
+        </span>
+        <span className="text-[11px] text-muted-foreground">
+          Usually within one business day · No bots, no call centers
+        </span>
+      </div>
     </div>
   );
 }

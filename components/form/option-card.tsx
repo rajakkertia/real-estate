@@ -23,13 +23,13 @@ export const OptionCard = React.forwardRef<HTMLButtonElement, OptionCardProps>(
         type="button"
         aria-pressed={selected}
         className={cn(
-          "group relative flex w-full items-start gap-4 rounded-2xl border bg-card p-4 text-left shadow-sm transition-all",
-          "hover:border-forest-700/40 hover:shadow-md",
-          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/60",
+          "group relative flex w-full items-start gap-3.5 rounded-2xl border bg-card text-left transition-all duration-200",
+          "hover:-translate-y-[1px] hover:border-forest-700/35 hover:shadow-[0_6px_24px_-12px_rgba(24,45,37,0.25)]",
+          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50 focus-visible:ring-offset-2 focus-visible:ring-offset-card",
           selected
-            ? "border-forest-700 ring-1 ring-forest-700/40 bg-forest-700/[0.03]"
-            : "border-border",
-          compact && "p-3",
+            ? "border-forest-700/90 bg-forest-700/[0.04] shadow-[0_6px_20px_-14px_rgba(24,45,37,0.4)]"
+            : "border-border/80",
+          compact ? "p-3.5" : "p-4 sm:p-[18px]",
           className,
         )}
         {...props}
@@ -37,19 +37,22 @@ export const OptionCard = React.forwardRef<HTMLButtonElement, OptionCardProps>(
         {icon ? (
           <span
             className={cn(
-              "flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-sand-100 text-forest-700 transition-colors",
-              selected && "bg-forest-700 text-sand-50",
+              "flex shrink-0 items-center justify-center rounded-xl transition-colors",
+              compact ? "h-9 w-9" : "h-10 w-10",
+              selected
+                ? "bg-forest-700 text-sand-50"
+                : "bg-sand-100 text-forest-700 group-hover:bg-sand-200/80",
             )}
           >
             {icon}
           </span>
         ) : null}
         <span className="flex min-w-0 flex-1 flex-col">
-          <span className="text-[15px] font-medium text-foreground">
+          <span className={cn("font-medium text-foreground", compact ? "text-[14px]" : "text-[15px]")}>
             {title}
           </span>
           {description ? (
-            <span className="mt-0.5 text-[13px] text-muted-foreground">
+            <span className="mt-0.5 text-[13px] leading-relaxed text-muted-foreground">
               {description}
             </span>
           ) : null}
@@ -58,8 +61,8 @@ export const OptionCard = React.forwardRef<HTMLButtonElement, OptionCardProps>(
           className={cn(
             "mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full border transition-all",
             selected
-              ? "border-forest-700 bg-forest-700 text-sand-50"
-              : "border-border bg-transparent text-transparent",
+              ? "border-forest-700 bg-forest-700 text-sand-50 scale-100"
+              : "border-border bg-transparent text-transparent scale-90 opacity-60",
           )}
           aria-hidden
         >
