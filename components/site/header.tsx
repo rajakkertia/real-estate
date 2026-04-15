@@ -49,17 +49,17 @@ export function Header() {
             <a
               key={item.href}
               href={item.href}
-              className="rounded-full px-4 py-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+              className="rounded-full px-3.5 py-2 text-[13.5px] font-medium text-muted-foreground transition-colors hover:text-foreground"
             >
               {item.label}
             </a>
           ))}
         </nav>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1.5">
           <Button asChild size="sm" className="hidden md:inline-flex">
             <a href="#get-started">
-              Start your brief
+              Start my brief
               <ArrowRight className="h-3.5 w-3.5" />
             </a>
           </Button>
